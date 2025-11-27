@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.text.Font?>
+<BorderPane prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.aoxter.thatwasgreat.ui.controller.HomeController">
+<top>
+    <Label text="That Was Great" alignment="CENTER" BorderPane.alignment="CENTER">
+        <font>
+            <Font name="System Bold" size="40.0" />
+        </font>
+    </Label>
+</top>
+<center>
+    <TilePane fx:id="categoryTilePane" hgap="5.0" prefHeight="200.0" prefWidth="200.0" vgap="5.0" GridPane.rowIndex="1" />
+</center>
+</BorderPane>
