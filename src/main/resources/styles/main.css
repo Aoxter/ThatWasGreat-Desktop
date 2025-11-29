@@ -1,0 +1,18 @@
+.category-scroll-pane {
+    -fx-background-color:transparent;
+}
+
+.category-tile {
+    -fx-padding: 12;
+    -fx-background-radius: 8;
+}
+
+.category-tile:hover {
+    -fx-background-color: #f5f5f5;
+    -fx-cursor: hand;
+}
+
+.category-add-tile-label {
+    -fx-font-size: 40;
+    -fx-text-fill: #666;
+}

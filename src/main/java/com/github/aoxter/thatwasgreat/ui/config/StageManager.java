@@ -3,6 +3,7 @@ package com.github.aoxter.thatwasgreat.ui.config;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.kordamp.bootstrapfx.BootstrapFX;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -20,19 +21,19 @@ public class StageManager {
     }
 
     public void switchScene(final FxmlView view) {
-        primaryStage.setTitle(applicationTitle);
-
         Parent rootNode = loadRootNode(view.getFxmlPath());
+        if(primaryStage.getScene() == null) {
+            primaryStage.setTitle(applicationTitle);
+            primaryStage.setScene(new Scene(rootNode));
+            primaryStage.getScene().getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
+            primaryStage.getScene().getStylesheets().add(getClass().getResource("/styles/main.css").toExternalForm());
 
-        Scene scene = new Scene(rootNode);
-//        String stylesheet = Objects.requireNonNull(getClass()
-//                        .getResource("/styles/styles.css"))
-//                .toExternalForm();
-//
-//        scene.getStylesheets().add(stylesheet);
-
-        primaryStage.setScene(scene);
+        }
+        else {
+            primaryStage.getScene().setRoot(rootNode);
+        }
         primaryStage.show();
+        primaryStage.centerOnScreen();
     }
 
     private Parent loadRootNode(String fxmlPath) {
@@ -43,12 +44,5 @@ public class StageManager {
             throw new RuntimeException(e);
         }
         return rootNode;
-    }
-
-    public void switchToNextScene(final FxmlView view) {
-        Parent rootNode = loadRootNode(view.getFxmlPath());
-        primaryStage.getScene().setRoot(rootNode);
-
-        primaryStage.show();
     }
 }

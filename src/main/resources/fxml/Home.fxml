@@ -4,6 +4,8 @@
 
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.geometry.Insets?>
 <BorderPane prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.aoxter.thatwasgreat.ui.controller.HomeController">
 <top>
     <Label text="That Was Great" alignment="CENTER" BorderPane.alignment="CENTER">
@@ -13,6 +15,14 @@
     </Label>
 </top>
 <center>
-    <TilePane fx:id="categoryTilePane" hgap="5.0" prefHeight="200.0" prefWidth="200.0" vgap="5.0" GridPane.rowIndex="1" />
+    <StackPane alignment="TOP_CENTER">
+        <padding>
+            <Insets top="100" right="100" bottom="100" left="100"/>
+        </padding>
+        <ScrollPane fx:id="categoryScrollPane" fitToWidth="true" pannable="true">
+            <FlowPane fx:id="categoryFlowPane" alignment="CENTER" hgap="20" vgap="20" prefWrapLength="400">
+            </FlowPane>
+        </ScrollPane>
+    </StackPane>
 </center>
 </BorderPane>
