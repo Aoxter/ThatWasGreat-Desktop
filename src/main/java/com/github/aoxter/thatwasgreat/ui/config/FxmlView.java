@@ -4,7 +4,13 @@ public enum FxmlView {
     HOME {
         @Override
         public String getFxmlPath() {
-            return "/fxml/home.fxml";
+            return "/fxml/Home.fxml";
+        }
+    },
+    NEW_CATEGORY {
+        @Override
+        public String getFxmlPath() {
+            return "/fxml/NewCategory.fxml";
         }
     };
 

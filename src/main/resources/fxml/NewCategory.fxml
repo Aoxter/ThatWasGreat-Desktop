@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.aoxter.thatwasgreat.ui.controller.NewCategoryController">
+    <top>
+        <Label alignment="CENTER" text="That Was Great" BorderPane.alignment="CENTER">
+            <font>
+                <Font name="System Bold" size="40.0" />
+            </font>
+        </Label>
+    </top>
+    <center>
+        <VBox fx:id="newCategoryFormVBox" alignment="CENTER">
+         <children>
+            <Label text="Name" />
+            <TextField fx:id="nameTextField" />
+            <Label text="Description (optional)" />
+            <TextArea fx:id="descriptionTextArea" prefHeight="200.0" prefWidth="200.0" />
+            <Label text="Rating form" />
+         </children></VBox>
+    </center>
+    <bottom>
+        <HBox alignment="CENTER">
+         <children>
+            <Button fx:id="addCategoryButton" mnemonicParsing="false" onAction="#addCategoryOnAction" text="Add" />
+            <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#goToHomeOnAction" text="Cancel" />
+         </children>
+        </HBox>
+    </bottom>
+</BorderPane>

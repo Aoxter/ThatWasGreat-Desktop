@@ -4,6 +4,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.kordamp.bootstrapfx.BootstrapFX;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -12,11 +13,13 @@ import java.io.IOException;
 public class StageManager {
     private final Stage primaryStage;
     private final FxmlLoader fxmlLoader;
+    private final ApplicationEventPublisher eventPublisher;
     private final String applicationTitle;
 
-    public StageManager(FxmlLoader fxmlLoader, Stage primaryStage, String applicationTitle) {
+    public StageManager(FxmlLoader fxmlLoader, ApplicationEventPublisher eventPublisher, Stage primaryStage, String applicationTitle) {
         this.primaryStage = primaryStage;
         this.fxmlLoader = fxmlLoader;
+        this.eventPublisher = eventPublisher;
         this.applicationTitle = applicationTitle;
     }
 

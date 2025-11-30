@@ -10,8 +10,18 @@ public enum RatingForm {
     private RatingForm(String name){
         this.name = name;
     }
+
     public static RatingForm getDefault(){
         return STARS;
+    }
+
+    public static RatingForm getByName(String searchingName) {
+        for(RatingForm ratingForm : values()) {
+            if(ratingForm.name.equals(searchingName)) {
+                return ratingForm;
+            }
+        }
+        return null;
     }
 
     @Override

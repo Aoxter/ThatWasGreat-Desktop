@@ -33,7 +33,11 @@ public class Category {
     private List<Entry> entries;
     //TODO icon for category
 
-    public Category() {
+    public Category(String name) {
+        this.name = name;
+        this.ratingForm = RatingForm.getDefault();
+        this.factors = new HashSet<>();
+        this.entries = new ArrayList<>();
     }
 
     public Category(String name, RatingForm ratingForm) {
