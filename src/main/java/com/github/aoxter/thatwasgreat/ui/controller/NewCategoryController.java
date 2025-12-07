@@ -9,6 +9,7 @@ import com.github.aoxter.thatwasgreat.ui.event.NewCategoryRequestEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,11 +50,15 @@ public class NewCategoryController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        VBox toggleBox = new VBox();
+        toggleBox.setSpacing(10);
+        toggleBox.setAlignment(Pos.CENTER_LEFT);
         for(RatingForm ratingForm : RatingForm.values()) {
             RadioButton ratingFormRadioButton = new RadioButton(ratingForm.toString());
             ratingFormRadioButton.setToggleGroup(ratingFormToggleGroup);
-            newCategoryFormVBox.getChildren().add(ratingFormRadioButton);
+            toggleBox.getChildren().add(ratingFormRadioButton);
         }
+        newCategoryFormVBox.getChildren().add(toggleBox);
     }
 
     @EventListener
