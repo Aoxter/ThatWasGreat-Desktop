@@ -16,6 +16,7 @@ public class Entry {
     @NotNull
     private String name;
     private String description;
+    @NotNull
     @ManyToOne(fetch=FetchType.LAZY, optional=false)
     @JsonSerialize(using = CategorySerializer.class)
     private Category category;
@@ -32,7 +33,8 @@ public class Entry {
     public Entry() {
     }
 
-    public Entry(String name) {
+    public Entry(Category category, String name) {
+        this.category = category;
         this.name = name;
     }
 

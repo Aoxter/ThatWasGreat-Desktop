@@ -1,6 +1,7 @@
 package com.github.aoxter.thatwasgreat;
 
 
+import atlantafx.base.theme.PrimerLight;
 import com.github.aoxter.thatwasgreat.ui.config.FxmlView;
 import com.github.aoxter.thatwasgreat.ui.config.StageManager;
 import javafx.application.Application;
@@ -27,6 +28,9 @@ public class ThatWasGreatFxApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        Application.setUserAgentStylesheet(
+                new PrimerLight().getUserAgentStylesheet()
+        );
         stage = primaryStage;
         stageManager = applicationContext.getBean(StageManager.class, primaryStage);
         showHomeScene();

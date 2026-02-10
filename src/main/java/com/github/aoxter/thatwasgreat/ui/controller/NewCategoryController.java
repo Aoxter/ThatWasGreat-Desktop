@@ -36,10 +36,6 @@ public class NewCategoryController implements Initializable {
     public TextField nameTextField;
     @FXML
     public TextArea descriptionTextArea;
-    @FXML
-    public Button addCategoryButton;
-    @FXML
-    public Button cancelButton;
 
     @Lazy
     public NewCategoryController(StageManager stageManager) {
