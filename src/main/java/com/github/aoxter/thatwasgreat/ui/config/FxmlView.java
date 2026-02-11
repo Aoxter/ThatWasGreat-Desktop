@@ -24,6 +24,12 @@ public enum FxmlView {
         public String getFxmlPath() {
             return "/fxml/CategoryTiers.fxml";
         }
+    },
+    NEW_ENTRY {
+        @Override
+        public String getFxmlPath() {
+            return "/fxml/NewEntry.fxml";
+        }
     };
 
     public abstract String getFxmlPath();

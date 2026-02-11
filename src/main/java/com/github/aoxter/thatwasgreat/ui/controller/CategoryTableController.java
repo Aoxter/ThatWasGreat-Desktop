@@ -5,6 +5,7 @@ import com.github.aoxter.thatwasgreat.core.model.Entry;
 import com.github.aoxter.thatwasgreat.core.service.CategoryService;
 import com.github.aoxter.thatwasgreat.ui.config.FxmlView;
 import com.github.aoxter.thatwasgreat.ui.config.StageManager;
+import com.github.aoxter.thatwasgreat.ui.event.NewEntryRequestEvent;
 import com.github.aoxter.thatwasgreat.ui.event.OpenCategoryEvent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,6 +15,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -33,13 +35,16 @@ public class CategoryTableController implements Initializable {
     @FXML
     public Label categoryDescriptionLabel;
 
-    private Category viewedCategory;
     private final StageManager stageManager;
+    private final ApplicationEventPublisher applicationEventPublisher;
+
+    private Category viewedCategory;
     private ObservableList<Entry> entriesList;
 
     @Lazy
-    public CategoryTableController(StageManager stageManager) {
+    public CategoryTableController(StageManager stageManager, ApplicationEventPublisher applicationEventPublisher) {
         this.stageManager = stageManager;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @EventListener
@@ -62,13 +67,14 @@ public class CategoryTableController implements Initializable {
     }
 
     public void addEntryOnAction(ActionEvent actionEvent) {
-        Entry newEntry = new Entry(viewedCategory, "New entry");
-        entriesList.add(newEntry);
+        applicationEventPublisher.publishEvent(new NewEntryRequestEvent(this, viewedCategory));
+        stageManager.switchScene(FxmlView.NEW_ENTRY);
     }
 
     public void removeEntriesOnAction(ActionEvent actionEvent) {
         ObservableList<Entry> selectedEntries = entryTableView.getSelectionModel().getSelectedItems();
         entryTableView.getItems().removeAll(List.copyOf(selectedEntries));
+        viewedCategory.getEntries().removeAll(List.copyOf(selectedEntries));
     }
 
     public void goBackOnAction(ActionEvent actionEvent) {

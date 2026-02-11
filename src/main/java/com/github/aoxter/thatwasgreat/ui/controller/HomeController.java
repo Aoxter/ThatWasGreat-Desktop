@@ -49,7 +49,9 @@ public class HomeController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        populateWithTestData();
+        if(categorySet == null) {
+            populateWithTestData();
+        }
         categoryScrollPane.getStyleClass().add("category-scroll-pane");
         refreshCategoryTilePane();
     }
