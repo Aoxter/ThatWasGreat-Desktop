@@ -9,7 +9,6 @@ import com.github.aoxter.thatwasgreat.ui.config.StageManager;
 import com.github.aoxter.thatwasgreat.ui.event.NewCategoryRequestEvent;
 import com.github.aoxter.thatwasgreat.ui.event.OpenCategoryEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -28,12 +27,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
-public class HomeController implements Initializable {
+public class HomeController extends SceneControler {
     private final static double CATEGORY_TILE_PREF_SIZE = 230.0;
-    private final StageManager stageManager;
-    private final ApplicationEventPublisher applicationEventPublisher;
+
     @Autowired
     CategoryService categoryService;
+
     @FXML
     public ScrollPane categoryScrollPane;
     @FXML
@@ -43,8 +42,7 @@ public class HomeController implements Initializable {
 
     @Lazy
     public HomeController(StageManager stageManager, ApplicationEventPublisher applicationEventPublisher) {
-        this.applicationEventPublisher = applicationEventPublisher;
-        this.stageManager = stageManager;
+        super(stageManager, applicationEventPublisher);
     }
 
     @Override
@@ -101,15 +99,15 @@ public class HomeController implements Initializable {
     private void openCategoryView(Category category) {
         applicationEventPublisher.publishEvent(new OpenCategoryEvent(this, category));
         if(RatingForm.TIER.equals(category.getRatingForm())) {
-            stageManager.switchScene(FxmlView.CATEGORY_TIERS);
+            switchScene(FxmlView.CATEGORY_TIERS);
         }
         else if(RatingForm.STARS.equals(category.getRatingForm()) || RatingForm.OneToTen.equals(category.getRatingForm())) {
-            stageManager.switchScene(FxmlView.CATEGORY_TABLE);
+            switchScene(FxmlView.CATEGORY_TABLE);
         }
     }
 
     private void openNewCategoryView() {
         applicationEventPublisher.publishEvent(new NewCategoryRequestEvent(this, categorySet.stream().map(Category::getName).collect(Collectors.toSet())));
-        stageManager.switchScene(FxmlView.NEW_CATEGORY);
+        switchScene(FxmlView.NEW_CATEGORY);
     }
 }

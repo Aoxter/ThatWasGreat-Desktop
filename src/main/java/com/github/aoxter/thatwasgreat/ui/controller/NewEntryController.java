@@ -9,7 +9,6 @@ import com.github.aoxter.thatwasgreat.ui.event.NewEntryRequestEvent;
 import com.github.aoxter.thatwasgreat.ui.event.OpenCategoryEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
@@ -21,12 +20,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 @Component
-public class NewEntryController implements Initializable {
-    private final StageManager stageManager;
-    private final ApplicationEventPublisher applicationEventPublisher;
-    private Category parentCategory;
-    private Entry createdEntry;
-
+public class NewEntryController extends SceneControler {
     @FXML
     public Label headerLabel;
     @FXML
@@ -36,10 +30,12 @@ public class NewEntryController implements Initializable {
     @FXML
     public ToggleGroup ratingToggleGroup;
 
+    private Category parentCategory;
+    private Entry createdEntry;
+
     @Lazy
     public NewEntryController(StageManager stageManager, ApplicationEventPublisher applicationEventPublisher) {
-        this.stageManager = stageManager;
-        this.applicationEventPublisher = applicationEventPublisher;
+        super(stageManager, applicationEventPublisher);
         this.parentCategory = null;
     }
 
@@ -64,22 +60,22 @@ public class NewEntryController implements Initializable {
                 parentCategory.getEntries().add(createdEntry);
                 goBackToCategoryView();
             } catch (Exception e) {
-                showError("Saving Error", e.getMessage());
+                showAlert(Alert.AlertType.ERROR,"Saving Error", e.getMessage());
             }
         }
     }
 
     private boolean isFormCorrect() {
         if(ratingToggleGroup.getSelectedToggle() == null) {
-            showError("Validation Error", "No rate selected");
+            showAlert(Alert.AlertType.ERROR,"Validation Error", "No rate selected");
             return false;
         }
         if(nameTextField.getText().isBlank()) {
-            showError("Validation Error", "Missing name");
+            showAlert(Alert.AlertType.ERROR, "Validation Error", "Missing name");
             return false;
         }
         if(parentCategory.getEntries().stream().map(Entry::getName).toList().contains(nameTextField.getText())) {
-            showError("Validation Error", "Entry witch such name already exists");
+            showAlert(Alert.AlertType.ERROR, "Validation Error", "Entry witch such name already exists");
             return false;
         }
         return true;
@@ -89,21 +85,13 @@ public class NewEntryController implements Initializable {
         goBackToCategoryView();
     }
 
-    private void showError(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
     private void goBackToCategoryView() {
         applicationEventPublisher.publishEvent(new OpenCategoryEvent(this, parentCategory));
         if(RatingForm.TIER.equals(parentCategory.getRatingForm())) {
-            stageManager.switchScene(FxmlView.CATEGORY_TIERS);
+            switchScene(FxmlView.CATEGORY_TIERS);
         }
         else if(RatingForm.STARS.equals(parentCategory.getRatingForm()) || RatingForm.OneToTen.equals(parentCategory.getRatingForm())) {
-            stageManager.switchScene(FxmlView.CATEGORY_TABLE);
+            switchScene(FxmlView.CATEGORY_TABLE);
         }
     }
 }

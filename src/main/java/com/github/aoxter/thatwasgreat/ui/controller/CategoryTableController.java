@@ -11,7 +11,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +24,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 @Component
-public class CategoryTableController implements Initializable {
+public class CategoryTableController extends SceneControler {
     @Autowired
     CategoryService categoryService;
+
     @FXML
     public TableView<Entry> entryTableView;
     @FXML
@@ -35,16 +35,12 @@ public class CategoryTableController implements Initializable {
     @FXML
     public Label categoryDescriptionLabel;
 
-    private final StageManager stageManager;
-    private final ApplicationEventPublisher applicationEventPublisher;
-
     private Category viewedCategory;
     private ObservableList<Entry> entriesList;
 
     @Lazy
     public CategoryTableController(StageManager stageManager, ApplicationEventPublisher applicationEventPublisher) {
-        this.stageManager = stageManager;
-        this.applicationEventPublisher = applicationEventPublisher;
+        super(stageManager, applicationEventPublisher);
     }
 
     @EventListener
@@ -68,7 +64,7 @@ public class CategoryTableController implements Initializable {
 
     public void addEntryOnAction(ActionEvent actionEvent) {
         applicationEventPublisher.publishEvent(new NewEntryRequestEvent(this, viewedCategory));
-        stageManager.switchScene(FxmlView.NEW_ENTRY);
+        switchScene(FxmlView.NEW_ENTRY);
     }
 
     public void removeEntriesOnAction(ActionEvent actionEvent) {
@@ -78,6 +74,6 @@ public class CategoryTableController implements Initializable {
     }
 
     public void goBackOnAction(ActionEvent actionEvent) {
-        stageManager.switchScene(FxmlView.HOME);
+        switchScene(FxmlView.HOME);
     }
 }

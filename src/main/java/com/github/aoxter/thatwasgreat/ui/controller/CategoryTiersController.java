@@ -6,8 +6,8 @@ import com.github.aoxter.thatwasgreat.ui.config.StageManager;
 import com.github.aoxter.thatwasgreat.ui.event.OpenCategoryEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -16,18 +16,18 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 @Component
-public class CategoryTiersController implements Initializable {
-    private Category viewedCategory;
-    private final StageManager stageManager;
+public class CategoryTiersController extends SceneControler {
 
     @FXML
     public Label categoryNameLabel;
     @FXML
     public Label categoryDescriptionLabel;
 
+    private Category viewedCategory;
+
     @Lazy
-    public CategoryTiersController(StageManager stageManager) {
-        this.stageManager = stageManager;
+    public CategoryTiersController(StageManager stageManager, ApplicationEventPublisher applicationEventPublisher) {
+        super(stageManager, applicationEventPublisher);
     }
 
     @EventListener
@@ -42,6 +42,6 @@ public class CategoryTiersController implements Initializable {
     }
 
     public void goBackOnAction(ActionEvent actionEvent) {
-        stageManager.switchScene(FxmlView.HOME);
+        switchScene(FxmlView.HOME);
     }
 }
