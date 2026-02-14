@@ -19,6 +19,7 @@ public enum ApplicationScene {
             return "/fxml/CategoryTable.fxml";
         }
     },
+    //TODO
     CATEGORY_TIERS {
         @Override
         public String getFxmlPath() {
