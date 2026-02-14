@@ -6,10 +6,12 @@ import com.github.aoxter.thatwasgreat.core.model.RatingForm;
 import com.github.aoxter.thatwasgreat.ui.config.FxmlView;
 import com.github.aoxter.thatwasgreat.ui.config.StageManager;
 import com.github.aoxter.thatwasgreat.ui.event.NewEntryRequestEvent;
+import com.github.aoxter.thatwasgreat.ui.event.OpenCategoryEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -21,6 +23,7 @@ import java.util.ResourceBundle;
 @Component
 public class NewEntryController implements Initializable {
     private final StageManager stageManager;
+    private final ApplicationEventPublisher applicationEventPublisher;
     private Category parentCategory;
     private Entry createdEntry;
 
@@ -34,8 +37,9 @@ public class NewEntryController implements Initializable {
     public ToggleGroup ratingToggleGroup;
 
     @Lazy
-    public NewEntryController(StageManager stageManager) {
+    public NewEntryController(StageManager stageManager, ApplicationEventPublisher applicationEventPublisher) {
         this.stageManager = stageManager;
+        this.applicationEventPublisher = applicationEventPublisher;
         this.parentCategory = null;
     }
 
@@ -58,7 +62,7 @@ public class NewEntryController implements Initializable {
             createdEntry.setOverallRate(Byte.parseByte(selectedRatingFormRadioButton.getText()));
             try {
                 parentCategory.getEntries().add(createdEntry);
-                stageManager.switchScene(FxmlView.HOME);
+                goBackToCategoryView();
             } catch (Exception e) {
                 showError("Saving Error", e.getMessage());
             }
@@ -82,7 +86,7 @@ public class NewEntryController implements Initializable {
     }
 
     public void cancelOnAction(ActionEvent actionEvent) {
-        stageManager.switchScene(FxmlView.HOME);
+        goBackToCategoryView();
     }
 
     private void showError(String title, String message) {
@@ -91,5 +95,15 @@ public class NewEntryController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void goBackToCategoryView() {
+        applicationEventPublisher.publishEvent(new OpenCategoryEvent(this, parentCategory));
+        if(RatingForm.TIER.equals(parentCategory.getRatingForm())) {
+            stageManager.switchScene(FxmlView.CATEGORY_TIERS);
+        }
+        else if(RatingForm.STARS.equals(parentCategory.getRatingForm()) || RatingForm.OneToTen.equals(parentCategory.getRatingForm())) {
+            stageManager.switchScene(FxmlView.CATEGORY_TABLE);
+        }
     }
 }
