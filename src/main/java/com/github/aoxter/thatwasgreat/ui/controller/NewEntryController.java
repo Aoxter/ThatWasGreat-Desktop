@@ -3,7 +3,7 @@ package com.github.aoxter.thatwasgreat.ui.controller;
 import com.github.aoxter.thatwasgreat.core.model.Category;
 import com.github.aoxter.thatwasgreat.core.model.Entry;
 import com.github.aoxter.thatwasgreat.core.model.RatingForm;
-import com.github.aoxter.thatwasgreat.ui.config.FxmlView;
+import com.github.aoxter.thatwasgreat.ui.config.ApplicationScene;
 import com.github.aoxter.thatwasgreat.ui.config.StageManager;
 import com.github.aoxter.thatwasgreat.ui.event.NewEntryRequestEvent;
 import com.github.aoxter.thatwasgreat.ui.event.OpenCategoryEvent;
@@ -16,7 +16,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 @Component
@@ -88,10 +87,10 @@ public class NewEntryController extends SceneControler {
     private void goBackToCategoryView() {
         applicationEventPublisher.publishEvent(new OpenCategoryEvent(this, parentCategory));
         if(RatingForm.TIER.equals(parentCategory.getRatingForm())) {
-            switchScene(FxmlView.CATEGORY_TIERS);
+            switchScene(ApplicationScene.CATEGORY_TIERS);
         }
         else if(RatingForm.STARS.equals(parentCategory.getRatingForm()) || RatingForm.OneToTen.equals(parentCategory.getRatingForm())) {
-            switchScene(FxmlView.CATEGORY_TABLE);
+            switchScene(ApplicationScene.CATEGORY_TABLE);
         }
     }
 }

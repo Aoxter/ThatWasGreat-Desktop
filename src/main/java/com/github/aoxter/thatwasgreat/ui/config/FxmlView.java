@@ -1,6 +1,6 @@
 package com.github.aoxter.thatwasgreat.ui.config;
 
-public enum FxmlView {
+public enum ApplicationScene {
     HOME {
         @Override
         public String getFxmlPath() {

@@ -1,6 +1,6 @@
 package com.github.aoxter.thatwasgreat.ui.controller;
 
-import com.github.aoxter.thatwasgreat.ui.config.FxmlView;
+import com.github.aoxter.thatwasgreat.ui.config.ApplicationScene;
 import com.github.aoxter.thatwasgreat.ui.config.StageManager;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -15,7 +15,7 @@ public abstract class SceneControler implements Initializable {
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
-    protected void switchScene(FxmlView newScene) {
+    protected void switchScene(ApplicationScene newScene) {
         stageManager.switchScene(newScene);
     }
 

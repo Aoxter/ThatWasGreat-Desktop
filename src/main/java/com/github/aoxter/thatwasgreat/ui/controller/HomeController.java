@@ -4,7 +4,7 @@ import com.github.aoxter.thatwasgreat.core.model.Category;
 import com.github.aoxter.thatwasgreat.core.model.Entry;
 import com.github.aoxter.thatwasgreat.core.model.RatingForm;
 import com.github.aoxter.thatwasgreat.core.service.CategoryService;
-import com.github.aoxter.thatwasgreat.ui.config.FxmlView;
+import com.github.aoxter.thatwasgreat.ui.config.ApplicationScene;
 import com.github.aoxter.thatwasgreat.ui.config.StageManager;
 import com.github.aoxter.thatwasgreat.ui.event.NewCategoryRequestEvent;
 import com.github.aoxter.thatwasgreat.ui.event.OpenCategoryEvent;
@@ -99,15 +99,15 @@ public class HomeController extends SceneControler {
     private void openCategoryView(Category category) {
         applicationEventPublisher.publishEvent(new OpenCategoryEvent(this, category));
         if(RatingForm.TIER.equals(category.getRatingForm())) {
-            switchScene(FxmlView.CATEGORY_TIERS);
+            switchScene(ApplicationScene.CATEGORY_TIERS);
         }
         else if(RatingForm.STARS.equals(category.getRatingForm()) || RatingForm.OneToTen.equals(category.getRatingForm())) {
-            switchScene(FxmlView.CATEGORY_TABLE);
+            switchScene(ApplicationScene.CATEGORY_TABLE);
         }
     }
 
     private void openNewCategoryView() {
         applicationEventPublisher.publishEvent(new NewCategoryRequestEvent(this, categorySet.stream().map(Category::getName).collect(Collectors.toSet())));
-        switchScene(FxmlView.NEW_CATEGORY);
+        switchScene(ApplicationScene.NEW_CATEGORY);
     }
 }

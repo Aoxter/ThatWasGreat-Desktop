@@ -3,7 +3,7 @@ package com.github.aoxter.thatwasgreat.ui.controller;
 import com.github.aoxter.thatwasgreat.core.model.Category;
 import com.github.aoxter.thatwasgreat.core.model.RatingForm;
 import com.github.aoxter.thatwasgreat.core.service.CategoryService;
-import com.github.aoxter.thatwasgreat.ui.config.FxmlView;
+import com.github.aoxter.thatwasgreat.ui.config.ApplicationScene;
 import com.github.aoxter.thatwasgreat.ui.config.StageManager;
 import com.github.aoxter.thatwasgreat.ui.event.NewCategoryRequestEvent;
 import javafx.event.ActionEvent;
@@ -70,7 +70,7 @@ public class NewCategoryController extends SceneControler {
             RadioButton selectedRatingFormRadioButton = (RadioButton) selectedRatingFormToggle;
             createdCategory.setRatingForm(RatingForm.getByName(selectedRatingFormRadioButton.getText()));
             try {
-                switchScene(FxmlView.HOME);
+                switchScene(ApplicationScene.HOME);
             } catch (Exception e) {
                 showAlert(Alert.AlertType.ERROR, "Saving Error", e.getMessage());
             }
@@ -94,6 +94,6 @@ public class NewCategoryController extends SceneControler {
     }
 
     public void goToHomeOnAction(ActionEvent actionEvent) {
-        switchScene(FxmlView.HOME);
+        switchScene(ApplicationScene.HOME);
     }
 }

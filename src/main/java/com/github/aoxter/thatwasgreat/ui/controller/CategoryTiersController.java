@@ -1,7 +1,7 @@
 package com.github.aoxter.thatwasgreat.ui.controller;
 
 import com.github.aoxter.thatwasgreat.core.model.Category;
-import com.github.aoxter.thatwasgreat.ui.config.FxmlView;
+import com.github.aoxter.thatwasgreat.ui.config.ApplicationScene;
 import com.github.aoxter.thatwasgreat.ui.config.StageManager;
 import com.github.aoxter.thatwasgreat.ui.event.OpenCategoryEvent;
 import javafx.event.ActionEvent;
@@ -42,6 +42,6 @@ public class CategoryTiersController extends SceneControler {
     }
 
     public void goBackOnAction(ActionEvent actionEvent) {
-        switchScene(FxmlView.HOME);
+        switchScene(ApplicationScene.HOME);
     }
 }

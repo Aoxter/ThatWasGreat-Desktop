@@ -3,7 +3,7 @@ package com.github.aoxter.thatwasgreat.ui.controller;
 import com.github.aoxter.thatwasgreat.core.model.Category;
 import com.github.aoxter.thatwasgreat.core.model.Entry;
 import com.github.aoxter.thatwasgreat.core.service.CategoryService;
-import com.github.aoxter.thatwasgreat.ui.config.FxmlView;
+import com.github.aoxter.thatwasgreat.ui.config.ApplicationScene;
 import com.github.aoxter.thatwasgreat.ui.config.StageManager;
 import com.github.aoxter.thatwasgreat.ui.event.NewEntryRequestEvent;
 import com.github.aoxter.thatwasgreat.ui.event.OpenCategoryEvent;
@@ -64,7 +64,7 @@ public class CategoryTableController extends SceneControler {
 
     public void addEntryOnAction(ActionEvent actionEvent) {
         applicationEventPublisher.publishEvent(new NewEntryRequestEvent(this, viewedCategory));
-        switchScene(FxmlView.NEW_ENTRY);
+        switchScene(ApplicationScene.NEW_ENTRY);
     }
 
     public void removeEntriesOnAction(ActionEvent actionEvent) {
@@ -74,6 +74,6 @@ public class CategoryTableController extends SceneControler {
     }
 
     public void goBackOnAction(ActionEvent actionEvent) {
-        switchScene(FxmlView.HOME);
+        switchScene(ApplicationScene.HOME);
     }
 }

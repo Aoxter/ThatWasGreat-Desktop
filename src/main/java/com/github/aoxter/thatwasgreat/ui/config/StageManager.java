@@ -22,7 +22,7 @@ public class StageManager {
         this.applicationTitle = applicationTitle;
     }
 
-    public void switchScene(final FxmlView view) {
+    public void switchScene(final ApplicationScene view) {
         Parent rootNode = loadRootNode(view.getFxmlPath());
         if(primaryStage.getScene() == null) {
             primaryStage.setTitle(applicationTitle);

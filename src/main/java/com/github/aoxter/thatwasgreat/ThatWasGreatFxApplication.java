@@ -2,7 +2,7 @@ package com.github.aoxter.thatwasgreat;
 
 
 import atlantafx.base.theme.PrimerLight;
-import com.github.aoxter.thatwasgreat.ui.config.FxmlView;
+import com.github.aoxter.thatwasgreat.ui.config.ApplicationScene;
 import com.github.aoxter.thatwasgreat.ui.config.StageManager;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -37,6 +37,6 @@ public class ThatWasGreatFxApplication extends Application {
     }
 
     private void showHomeScene() {
-        stageManager.switchScene(FxmlView.HOME);
+        stageManager.switchScene(ApplicationScene.HOME);
     }
 }
