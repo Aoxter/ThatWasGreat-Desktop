@@ -22,9 +22,9 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 @Component
-public class NewCategoryController extends SceneControler {
+public class NewCategoryController extends SceneController {
     @Autowired
-    CategoryService categoryService;
+    protected CategoryService categoryService;
 
     @FXML
     public VBox newCategoryFormVBox;
@@ -70,6 +70,12 @@ public class NewCategoryController extends SceneControler {
             RadioButton selectedRatingFormRadioButton = (RadioButton) selectedRatingFormToggle;
             createdCategory.setRatingForm(RatingForm.getByName(selectedRatingFormRadioButton.getText()));
             try {
+                try {
+                    categoryService.add(createdCategory);
+                } catch (Exception e) {
+                    showAlert(Alert.AlertType.ERROR, "Database Error", "Unable to save this category into database");
+                    e.printStackTrace();
+                }
                 switchScene(ApplicationScene.HOME);
             } catch (Exception e) {
                 showAlert(Alert.AlertType.ERROR, "Saving Error", e.getMessage());

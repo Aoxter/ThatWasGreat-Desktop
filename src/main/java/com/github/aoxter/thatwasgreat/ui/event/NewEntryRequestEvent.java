@@ -4,14 +4,14 @@ import com.github.aoxter.thatwasgreat.core.model.Category;
 import org.springframework.context.ApplicationEvent;
 
 public class NewEntryRequestEvent extends ApplicationEvent {
-    private final Category parentCategory;
+    private final Long categoryId;
 
-    public NewEntryRequestEvent(Object source, Category parentCategory) {
+    public NewEntryRequestEvent(Object source, Long categoryId) {
         super(source);
-        this.parentCategory = parentCategory;
+        this.categoryId = categoryId;
     }
 
-    public Category getParentCategory() {
-        return parentCategory;
+    public Long getParentCategoryId() {
+        return categoryId;
     }
 }

@@ -94,4 +94,20 @@ public class Entry {
     public void setRates(Map<String, Byte> rates) {
         this.rates = rates;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Entry)) {
+            return false;
+        }
+        return id != null && id.equals(((Entry) o).getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

@@ -9,18 +9,18 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import javax.sql.DataSource;
 import java.util.Objects;
 
-@Configuration
-public class DataSourceConfiguration {
-    @Autowired
-    Environment environment;
-
-    @Bean
-    public DataSource getDataSource() {
-        final DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(Objects.requireNonNull(environment.getProperty("driverClassName")));
-        dataSource.setUrl(environment.getProperty("url"));
-        dataSource.setUsername(environment.getProperty("username"));
-        dataSource.setPassword(environment.getProperty("password"));
-        return dataSource;
-    }
-}
+//@Configuration
+//public class DataSourceConfiguration {
+//    @Autowired
+//    Environment environment;
+//
+//    @Bean
+//    public DataSource getDataSource() {
+//        final DriverManagerDataSource dataSource = new DriverManagerDataSource();
+//        dataSource.setDriverClassName(Objects.requireNonNull(environment.getProperty("driverClassName")));
+//        dataSource.setUrl(environment.getProperty("url"));
+//        dataSource.setUsername(environment.getProperty("username"));
+//        dataSource.setPassword(environment.getProperty("password"));
+//        return dataSource;
+//    }
+//}

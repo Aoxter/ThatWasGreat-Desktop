@@ -2,7 +2,6 @@ package com.github.aoxter.thatwasgreat.core.service;
 
 import com.github.aoxter.thatwasgreat.core.model.Category;
 import com.github.aoxter.thatwasgreat.core.model.CategoryRepository;
-import com.github.aoxter.thatwasgreat.core.service.exception.CategoryCanNotBeRemovedException;
 import com.github.aoxter.thatwasgreat.core.service.exception.CategoryNotFoundException;
 import com.github.aoxter.thatwasgreat.core.service.exception.FactorAlreadyExistsException;
 import com.github.aoxter.thatwasgreat.core.service.exception.FactorNotFoundException;
@@ -33,8 +32,12 @@ public class CategoryService {
         return categoryRepository.findById(id);
     }
 
-    public Optional<Category> getByName(String name) {
-        return Optional.ofNullable(categoryRepository.findByName(name));
+//    public Optional<Category> getByName(String name) {
+//        return Optional.ofNullable(categoryRepository.findByName(name));
+//    }
+
+    public Optional<Category> getWithEntries(Long id) {
+        return Optional.of(categoryRepository.findWithEntriesById(id));
     }
 
     public Category add(Category category) {
@@ -42,17 +45,8 @@ public class CategoryService {
                 category.getRatingForm(), category.getFactors()));
     }
 
-    public Optional<Category> update(Long id, Category newCategoryData) {
-        Optional<Category> categoryToUpdate = categoryRepository.findById(id);
-        if (categoryToUpdate.isPresent()) {
-            Category categoryUpdated = categoryToUpdate.get();
-            categoryUpdated.setName(newCategoryData.getName());
-            categoryUpdated.setDescription(newCategoryData.getDescription());
-            categoryUpdated.setRatingForm(newCategoryData.getRatingForm());
-            return Optional.of(categoryRepository.save(categoryUpdated));
-        } else {
-            return Optional.empty();
-        }
+    public Category update(Category categoryToUpdate) {
+        return categoryRepository.save(categoryToUpdate);
     }
 
     public Category addFactor(Long id, String factor) throws CategoryNotFoundException, FactorAlreadyExistsException {
@@ -127,9 +121,7 @@ public class CategoryService {
         }
     }
 
-    //TODO Remove this feature - all categories should be removable, even default ones
-    public void delete(Long id) throws CategoryCanNotBeRemovedException {
-        if(id == 1 || id == 2 || id == 3 || id == 4) throw new CategoryCanNotBeRemovedException("Default categories can not be removed");
+    public void delete(Long id) {
         categoryRepository.deleteById(id);
     }
 }

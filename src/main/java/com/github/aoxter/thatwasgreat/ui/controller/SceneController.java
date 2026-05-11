@@ -4,13 +4,16 @@ import com.github.aoxter.thatwasgreat.ui.config.ApplicationScene;
 import com.github.aoxter.thatwasgreat.ui.config.StageManager;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import org.springframework.context.ApplicationEventPublisher;
 
-public abstract class SceneControler implements Initializable {
+import java.util.Optional;
+
+public abstract class SceneController implements Initializable {
     private final StageManager stageManager;
     protected final ApplicationEventPublisher applicationEventPublisher;
 
-    public SceneControler(StageManager stageManager, ApplicationEventPublisher applicationEventPublisher) {
+    public SceneController(StageManager stageManager, ApplicationEventPublisher applicationEventPublisher) {
         this.stageManager = stageManager;
         this.applicationEventPublisher = applicationEventPublisher;
     }
@@ -19,15 +22,16 @@ public abstract class SceneControler implements Initializable {
         stageManager.switchScene(newScene);
     }
 
-    protected void showAlert(Alert.AlertType alertType, String title, String message) {
-        showAlert(alertType, title, null, message);
+    protected ButtonType showAlert(Alert.AlertType alertType, String title, String message) {
+        return showAlert(alertType, title, null, message);
     }
 
-    protected void showAlert(Alert.AlertType alertType, String title, String headerText, String message) {
+    protected ButtonType showAlert(Alert.AlertType alertType, String title, String headerText, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
         alert.setHeaderText(headerText);
         alert.setContentText(message);
-        alert.showAndWait();
+        Optional<ButtonType> result = alert.showAndWait();
+        return result.orElse(null);
     }
 }

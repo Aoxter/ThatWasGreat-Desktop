@@ -20,13 +20,14 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
-import java.util.List;
+import java.util.HashSet;
 import java.util.ResourceBundle;
 
 @Component
-public class CategoryTableController extends SceneControler {
+public class CategoryTableController extends SceneController {
+
     @Autowired
-    CategoryService categoryService;
+    protected CategoryService categoryService;
 
     @FXML
     public TableView<Entry> entryTableView;
@@ -36,7 +37,6 @@ public class CategoryTableController extends SceneControler {
     public Label categoryDescriptionLabel;
 
     private Category viewedCategory;
-    private ObservableList<Entry> entriesList;
 
     @Lazy
     public CategoryTableController(StageManager stageManager, ApplicationEventPublisher applicationEventPublisher) {
@@ -44,15 +44,17 @@ public class CategoryTableController extends SceneControler {
     }
 
     @EventListener
-    public void handleNewCategoryRequestEvent(OpenCategoryEvent event) {
-        viewedCategory = event.getCategoryToOpen();
+    public void handleOpenCategoryRequestEvent(OpenCategoryEvent event) {
+        viewedCategory = categoryService.getWithEntries(event.getCategoryId()).orElse(null);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         categoryNameLabel.setText(viewedCategory.getName());
         categoryDescriptionLabel.setText(viewedCategory.getDescription());
-        entriesList = FXCollections.observableArrayList(viewedCategory.getEntries());
+        if(viewedCategory == null) {
+        }
+        ObservableList<Entry> entriesList = FXCollections.observableArrayList(viewedCategory.getEntries());
         TableColumn<Entry, String> nameColumn = new TableColumn<>("Name");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         TableColumn<Entry, Byte> ratingColumn = new TableColumn<>("Rating");
@@ -63,14 +65,29 @@ public class CategoryTableController extends SceneControler {
     }
 
     public void addEntryOnAction(ActionEvent actionEvent) {
-        applicationEventPublisher.publishEvent(new NewEntryRequestEvent(this, viewedCategory));
+        applicationEventPublisher.publishEvent(new NewEntryRequestEvent(this, viewedCategory.getId()));
         switchScene(ApplicationScene.NEW_ENTRY);
     }
 
     public void removeEntriesOnAction(ActionEvent actionEvent) {
         ObservableList<Entry> selectedEntries = entryTableView.getSelectionModel().getSelectedItems();
-        entryTableView.getItems().removeAll(List.copyOf(selectedEntries));
-        viewedCategory.getEntries().removeAll(List.copyOf(selectedEntries));
+        HashSet<Entry> entriesToRemoveSet = new HashSet<>(selectedEntries);
+        entryTableView.getItems().removeAll(selectedEntries);
+        entryTableView.refresh();
+        try {
+            viewedCategory.removeEntries(entriesToRemoveSet);
+            viewedCategory = categoryService.update(viewedCategory);
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Database Error", "Unable to remove these entries from database");
+            e.printStackTrace();
+        }
+    }
+
+    public void removeCategoryOnAction(ActionEvent actionEvent) {
+        if(ButtonType.OK.equals(showAlert(Alert.AlertType.CONFIRMATION, "Are you sure?", "This action will remove this category and all of its entries. It cannot be undone."))) {
+            categoryService.delete(viewedCategory.getId());
+            switchScene(ApplicationScene.HOME);
+        }
     }
 
     public void goBackOnAction(ActionEvent actionEvent) {

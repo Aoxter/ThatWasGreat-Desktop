@@ -1,17 +1,16 @@
 package com.github.aoxter.thatwasgreat.ui.event;
 
-import com.github.aoxter.thatwasgreat.core.model.Category;
 import org.springframework.context.ApplicationEvent;
 
 public class OpenCategoryEvent extends ApplicationEvent {
-    private final Category categoryToOpen;
+    private final Long categoryId;
 
-    public OpenCategoryEvent(Object source, Category category) {
+    public OpenCategoryEvent(Object source, Long categoryId) {
         super(source);
-        this.categoryToOpen = category;
+        this.categoryId = categoryId;
     }
 
-    public Category getCategoryToOpen() {
-        return categoryToOpen;
+    public Long getCategoryId() {
+        return categoryId;
     }
 }

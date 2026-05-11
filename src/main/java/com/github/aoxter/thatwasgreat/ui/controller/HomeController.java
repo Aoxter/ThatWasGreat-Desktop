@@ -1,7 +1,6 @@
 package com.github.aoxter.thatwasgreat.ui.controller;
 
 import com.github.aoxter.thatwasgreat.core.model.Category;
-import com.github.aoxter.thatwasgreat.core.model.Entry;
 import com.github.aoxter.thatwasgreat.core.model.RatingForm;
 import com.github.aoxter.thatwasgreat.core.service.CategoryService;
 import com.github.aoxter.thatwasgreat.ui.config.ApplicationScene;
@@ -20,14 +19,11 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class HomeController extends SceneControler {
+public class HomeController extends SceneController {
     private final static double CATEGORY_TILE_PREF_SIZE = 230.0;
 
     @Autowired
@@ -38,7 +34,7 @@ public class HomeController extends SceneControler {
     @FXML
     public FlowPane categoryFlowPane;
 
-    private Set<Category> categorySet;
+    private List<Category> categoryList;
 
     @Lazy
     public HomeController(StageManager stageManager, ApplicationEventPublisher applicationEventPublisher) {
@@ -47,26 +43,14 @@ public class HomeController extends SceneControler {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        if(categorySet == null) {
-            populateWithTestData();
-        }
+        categoryList = categoryService.getAll();
         categoryScrollPane.getStyleClass().add("category-scroll-pane");
         refreshCategoryTilePane();
     }
 
-    private void populateWithTestData() {
-        categorySet = new LinkedHashSet<>(categoryService.getAll());
-        Category category1 = new Category("Test 1", RatingForm.OneToTen);
-        category1.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc eu felis venenatis, tincidunt mauris sed, pharetra justo. Ut congue lectus dolor, et sollicitudin ipsum fermentum ut. Nam imperdiet tempor augue tristique facilisis. Mauris maximus augue id velit aliquet tempus. Sed a facilisis ligula, nec condimentum risus. Suspendisse potenti. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Quisque eget felis ut dui pretium mollis at id risus.");
-        category1.getEntries().add(new Entry(category1, "Lorem Entrum", "Lorem ipsum dolor sit amet", (byte) 6, new HashMap <>()));
-        categorySet.add(category1);
-        categorySet.add(new Category("Test 2", RatingForm.TIER));
-        categorySet.add(new Category("Test 3", RatingForm.STARS));
-    }
-
     private void refreshCategoryTilePane() {
         categoryFlowPane.getChildren().clear();
-        categoryFlowPane.getChildren().addAll(categorySet.stream().map(this::createCategoryTile).collect(Collectors.toList()));
+        categoryFlowPane.getChildren().addAll(categoryList.stream().map(this::createCategoryTile).collect(Collectors.toList()));
         categoryFlowPane.getChildren().add(createAddTile(this::openNewCategoryView));
     }
 
@@ -78,6 +62,8 @@ public class HomeController extends SceneControler {
         Label titleLabel = new Label(category.getName());
         titleLabel.getStyleClass().add("panel-title");
         tile.getChildren().add(titleLabel);
+//        tile.setOnMousePressed(e -> tile.setStyle("-fx-opacity: 0.85;"));
+//        tile.setOnMouseReleased(e -> tile.setStyle("-fx-opacity: 1.0;"));
         tile.setOnMouseClicked(e -> {
             openCategoryView(category);
         });
@@ -97,7 +83,7 @@ public class HomeController extends SceneControler {
     }
 
     private void openCategoryView(Category category) {
-        applicationEventPublisher.publishEvent(new OpenCategoryEvent(this, category));
+        applicationEventPublisher.publishEvent(new OpenCategoryEvent(this, category.getId()));
         if(RatingForm.TIER.equals(category.getRatingForm())) {
             switchScene(ApplicationScene.CATEGORY_TIERS);
         }
@@ -107,7 +93,7 @@ public class HomeController extends SceneControler {
     }
 
     private void openNewCategoryView() {
-        applicationEventPublisher.publishEvent(new NewCategoryRequestEvent(this, categorySet.stream().map(Category::getName).collect(Collectors.toSet())));
+        applicationEventPublisher.publishEvent(new NewCategoryRequestEvent(this, categoryList.stream().map(Category::getName).collect(Collectors.toSet())));
         switchScene(ApplicationScene.NEW_CATEGORY);
     }
 }
