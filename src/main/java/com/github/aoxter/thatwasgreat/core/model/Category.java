@@ -1,6 +1,5 @@
 package com.github.aoxter.thatwasgreat.core.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.aoxter.thatwasgreat.core.service.exception.EntryAlreadyExistsException;
 import jakarta.persistence.*;
 import org.antlr.v4.runtime.misc.NotNull;
@@ -30,7 +29,6 @@ public class Category {
     @Column(name = "factor")
     private Set<String> factors;
     @OneToMany(mappedBy="category", cascade=CascadeType.ALL, orphanRemoval=true)
-    @JsonSerialize(using = EntryListSerializer.class)
     private Set<Entry> entries;
     //TODO icon for category
 

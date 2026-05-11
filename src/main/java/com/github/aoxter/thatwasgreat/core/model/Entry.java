@@ -1,6 +1,5 @@
 package com.github.aoxter.thatwasgreat.core.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import org.antlr.v4.runtime.misc.NotNull;
 
@@ -18,7 +17,6 @@ public class Entry {
     private String description;
     @NotNull
     @ManyToOne(fetch=FetchType.LAZY, optional=false)
-    @JsonSerialize(using = CategorySerializer.class)
     private Category category;
     private byte overallRate;
     @ElementCollection
