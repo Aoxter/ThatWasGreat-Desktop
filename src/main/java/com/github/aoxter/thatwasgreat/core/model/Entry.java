@@ -9,8 +9,7 @@ import java.util.Map;
 @Table(name="tbl_entry")
 public class Entry {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotNull
     private String name;

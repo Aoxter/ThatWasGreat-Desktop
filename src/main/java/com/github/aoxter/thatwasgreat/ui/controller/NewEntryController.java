@@ -66,6 +66,7 @@ public class NewEntryController extends SceneController {
                 categoryService.update(parentCategory);
                 goBackToCategoryView();
             } catch (Exception e) {
+                parentCategory = categoryService.getWithEntries(parentCategory.getId()).orElse(null);
                 e.printStackTrace();
                 showAlert(Alert.AlertType.ERROR,"Saving Error", e.getMessage());
             }

@@ -12,10 +12,8 @@ import java.util.stream.Collectors;
 @NamedEntityGraph(name = "graph.Category.entries",
         attributeNodes = @NamedAttributeNode("entries"))
 public class Category {
-    //TODO Configure generator for sequence generator incremented by 1
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotNull
     @Column(unique=true)

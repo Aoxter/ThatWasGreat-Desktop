@@ -54,14 +54,19 @@ public class CategoryTableController extends SceneController {
         categoryDescriptionLabel.setText(viewedCategory.getDescription());
         if(viewedCategory == null) {
         }
-        ObservableList<Entry> entriesList = FXCollections.observableArrayList(viewedCategory.getEntries());
         TableColumn<Entry, String> nameColumn = new TableColumn<>("Name");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         TableColumn<Entry, Byte> ratingColumn = new TableColumn<>("Rating");
         ratingColumn.setCellValueFactory(new PropertyValueFactory<>("overallRate"));
-        entryTableView.setItems(entriesList);
+        refreshTableItems();
         entryTableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         entryTableView.getColumns().addAll(nameColumn, ratingColumn);
+    }
+
+    protected void refreshTableItems() {
+        ObservableList<Entry> entriesList = FXCollections.observableArrayList(viewedCategory.getEntries());
+        entryTableView.setItems(entriesList);
+        entryTableView.refresh();
     }
 
     public void addEntryOnAction(ActionEvent actionEvent) {
@@ -72,15 +77,15 @@ public class CategoryTableController extends SceneController {
     public void removeEntriesOnAction(ActionEvent actionEvent) {
         ObservableList<Entry> selectedEntries = entryTableView.getSelectionModel().getSelectedItems();
         HashSet<Entry> entriesToRemoveSet = new HashSet<>(selectedEntries);
-        entryTableView.getItems().removeAll(selectedEntries);
-        entryTableView.refresh();
         try {
             viewedCategory.removeEntries(entriesToRemoveSet);
             viewedCategory = categoryService.update(viewedCategory);
         } catch (Exception e) {
+            viewedCategory = categoryService.getWithEntries(viewedCategory.getId()).orElse(null);
             showAlert(Alert.AlertType.ERROR, "Database Error", "Unable to remove these entries from database");
             e.printStackTrace();
         }
+        refreshTableItems();
     }
 
     public void removeCategoryOnAction(ActionEvent actionEvent) {

@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Service
-@Transactional
 public class EntryService {
     private final EntryRepository entryRepository;
 
@@ -17,14 +16,12 @@ public class EntryService {
         this.entryRepository = entryRepository;
     }
 
+    @Transactional(readOnly=true)
     public List<Entry> getAll(){
         return  entryRepository.findAll();
     }
 
-    public List<Entry> getAll(long id){
-        return  entryRepository.findByCategoryId(id);
-    }
-
+    @Transactional(readOnly=true)
     public Optional<Entry> getById(Long id) {
         return entryRepository.findById(id);
     }
@@ -37,6 +34,7 @@ public class EntryService {
         return rates;
     }
 
+    @Transactional()
     public Optional<Entry> update(Long id, Entry newEntryData) {
         Optional<Entry> entryToUpdate = entryRepository.findById(id);
         if (entryToUpdate.isPresent()) {

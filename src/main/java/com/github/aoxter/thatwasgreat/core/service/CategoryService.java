@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Transactional
 public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final FactorService factorService;
@@ -24,31 +23,33 @@ public class CategoryService {
         this.factorService = factorService;
     }
 
+    @Transactional(readOnly=true)
     public List<Category> getAll(){
         return  categoryRepository.findAll();
     }
 
+    @Transactional(readOnly=true)
     public Optional<Category> getById(Long id) {
         return categoryRepository.findById(id);
     }
 
-//    public Optional<Category> getByName(String name) {
-//        return Optional.ofNullable(categoryRepository.findByName(name));
-//    }
-
+    @Transactional(readOnly=true)
     public Optional<Category> getWithEntries(Long id) {
         return Optional.of(categoryRepository.findWithEntriesById(id));
     }
 
+    @Transactional()
     public Category add(Category category) {
         return categoryRepository.save(new Category(category.getName(), category.getDescription(),
                 category.getRatingForm(), category.getFactors()));
     }
 
+    @Transactional()
     public Category update(Category categoryToUpdate) {
         return categoryRepository.save(categoryToUpdate);
     }
 
+    @Transactional()
     public Category addFactor(Long id, String factor) throws CategoryNotFoundException, FactorAlreadyExistsException {
         Optional<Category> categoryToUpdateRaw = categoryRepository.findById(id);
         if (categoryToUpdateRaw.isPresent()) {
@@ -71,6 +72,7 @@ public class CategoryService {
         }
     }
 
+    @Transactional()
     public Category deleteFactor(Long id, String factor) throws CategoryNotFoundException, FactorAlreadyExistsException {
         Optional<Category> categoryToUpdateRaw = categoryRepository.findById(id);
         if (categoryToUpdateRaw.isPresent()) {
@@ -93,6 +95,7 @@ public class CategoryService {
         }
     }
 
+    @Transactional()
     public Category renameFactor(Long id, String oldFactor, String newFactor) {
         Optional<Category> categoryToUpdateRaw = categoryRepository.findById(id);
         if (categoryToUpdateRaw.isPresent()) {
@@ -121,6 +124,7 @@ public class CategoryService {
         }
     }
 
+    @Transactional()
     public void delete(Long id) {
         categoryRepository.deleteById(id);
     }
