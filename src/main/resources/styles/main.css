@@ -16,3 +16,13 @@
     -fx-font-size: 40;
     -fx-text-fill: #666;
 }
+
+.main-menu-button {
+    -fx-text-fill: #FFD700;
+    -fx-background-color: transparent;
+}
+
+.main-menu-button:hover {
+    -fx-background-color: transparent;
+    -fx-text-fill: #FFFFFF;
+}

@@ -7,6 +7,7 @@ import com.github.aoxter.thatwasgreat.ui.config.ApplicationScene;
 import com.github.aoxter.thatwasgreat.ui.config.StageManager;
 import com.github.aoxter.thatwasgreat.ui.event.NewCategoryRequestEvent;
 import com.github.aoxter.thatwasgreat.ui.event.OpenCategoryEvent;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -33,11 +34,16 @@ public class HomeController extends SceneController {
     public ScrollPane categoryScrollPane;
     @FXML
     public FlowPane categoryFlowPane;
+    @FXML
+    public VBox mainMenuVBox;
 
     private List<Category> categoryList;
 
+    private StageManager stageManager;
+
     @Lazy
     public HomeController(StageManager stageManager, ApplicationEventPublisher applicationEventPublisher) {
+        this.stageManager = stageManager;
         super(stageManager, applicationEventPublisher);
     }
 
@@ -95,5 +101,28 @@ public class HomeController extends SceneController {
     private void openNewCategoryView() {
         applicationEventPublisher.publishEvent(new NewCategoryRequestEvent(this, categoryList.stream().map(Category::getName).collect(Collectors.toSet())));
         switchScene(ApplicationScene.NEW_CATEGORY);
+    }
+
+    public void menuCategoriesOnAction(ActionEvent actionEvent) {
+    }
+
+    public void menuSettingsOnAction(ActionEvent actionEvent) {
+    }
+
+    public void minimizeWindow(ActionEvent actionEvent) {
+        stageManager.switchMinimalized();
+    }
+
+    public void maximizeWindow(ActionEvent actionEvent) {
+        stageManager.switchMaximized();
+    }
+
+    public void closeWindow(ActionEvent actionEvent) {
+        stageManager.close();
+    }
+
+    public void hideShowMainMenu(ActionEvent actionEvent) {
+        mainMenuVBox.setVisible(!mainMenuVBox.isVisible());
+        mainMenuVBox.setManaged(mainMenuVBox.isVisible());
     }
 }
