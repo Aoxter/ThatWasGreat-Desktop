@@ -1,17 +1,19 @@
 package com.github.aoxter.thatwasgreat.core.service;
 
+import com.github.aoxter.thatwasgreat.core.dto.CategoryDTO;
+import com.github.aoxter.thatwasgreat.core.dto.CategoryWithEntriesDTO;
+import com.github.aoxter.thatwasgreat.core.dto.NewCategoryDTO;
+import com.github.aoxter.thatwasgreat.core.mapper.CategoryMapper;
 import com.github.aoxter.thatwasgreat.core.model.Category;
-import com.github.aoxter.thatwasgreat.core.model.CategoryRepository;
+import com.github.aoxter.thatwasgreat.core.repository.CategoryRepository;
 import com.github.aoxter.thatwasgreat.core.service.exception.CategoryNotFoundException;
 import com.github.aoxter.thatwasgreat.core.service.exception.FactorAlreadyExistsException;
 import com.github.aoxter.thatwasgreat.core.service.exception.FactorNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryService {
@@ -24,29 +26,37 @@ public class CategoryService {
     }
 
     @Transactional(readOnly=true)
-    public List<Category> getAll(){
-        return  categoryRepository.findAll();
+    public List<CategoryDTO> getAll(){
+        List<Category> categoryList = categoryRepository.findAll();
+        return categoryList.stream().map(CategoryMapper::toCategoryDTO).collect(Collectors.toList());
     }
 
     @Transactional(readOnly=true)
-    public Optional<Category> getById(Long id) {
-        return categoryRepository.findById(id);
+    public Set<String> getAllNames() {
+        return categoryRepository.findAllNames();
     }
 
     @Transactional(readOnly=true)
-    public Optional<Category> getWithEntries(Long id) {
-        return Optional.of(categoryRepository.findWithEntriesById(id));
+    public CategoryDTO getById(Long id) {
+        return categoryRepository.findById(id)
+                .map(CategoryMapper::toCategoryDTO)
+                .orElse(null);
+    }
+
+    @Transactional(readOnly=true)
+    public CategoryWithEntriesDTO getWithEntries(Long id) {
+        Category category = categoryRepository.findWithEntriesById(id);
+        return category != null ? CategoryMapper.toCategoryWithEntriesDTO(category) : null;
     }
 
     @Transactional()
-    public Category add(Category category) {
-        return categoryRepository.save(new Category(category.getName(), category.getDescription(),
-                category.getRatingForm(), category.getFactors()));
+    public void add(NewCategoryDTO newCategoryDTO) {
+        categoryRepository.save(CategoryMapper.toCategory(newCategoryDTO));
     }
 
     @Transactional()
-    public Category update(Category categoryToUpdate) {
-        return categoryRepository.save(categoryToUpdate);
+    public void update(CategoryWithEntriesDTO categoryToUpdate) {
+        categoryRepository.save(CategoryMapper.toCategory(categoryToUpdate));
     }
 
     @Transactional()

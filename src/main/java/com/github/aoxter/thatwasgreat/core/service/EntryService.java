@@ -2,7 +2,7 @@ package com.github.aoxter.thatwasgreat.core.service;
 
 import com.github.aoxter.thatwasgreat.core.model.Category;
 import com.github.aoxter.thatwasgreat.core.model.Entry;
-import com.github.aoxter.thatwasgreat.core.model.EntryRepository;
+import com.github.aoxter.thatwasgreat.core.repository.EntryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

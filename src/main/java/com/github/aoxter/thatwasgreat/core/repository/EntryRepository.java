@@ -1,5 +1,6 @@
-package com.github.aoxter.thatwasgreat.core.model;
+package com.github.aoxter.thatwasgreat.core.repository;
 
+import com.github.aoxter.thatwasgreat.core.model.Entry;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

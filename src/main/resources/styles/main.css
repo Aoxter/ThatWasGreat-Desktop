@@ -1,28 +1,126 @@
-.root .category-scroll-pane {
-    -fx-background-color:transparent;
+.root {
+   primary-theme-colour: #191923;
+   secondary-theme-colour: #FFD700;
 }
 
-.root .category-tile {
-    -fx-padding: 12;
-    -fx-background-radius: 8;
+.twg-top-panel-layout {
+    -fx-padding: 10;
+    -fx-background-color: primary-theme-colour;
 }
 
-.root .category-tile:hover {
-    -fx-background-color: #f5f5f5;
-    -fx-cursor: hand;
+.twg-navigation-menu-layout {
+    -fx-padding: 10;
+    -fx-background-color: primary-theme-colour;
 }
 
-.root .category-add-tile-label {
-    -fx-font-size: 40;
-    -fx-text-fill: #666;
+.twg-app-title-label {
+    -fx-text-fill: secondary-theme-colour;
+    -fx-font-family: "Monotype Corsiva";
+    -fx-font-size: 40px;
+    -fx-alignment: center;
 }
 
-.main-menu-button {
+.twg-main-menu-button {
     -fx-text-fill: #FFD700;
     -fx-background-color: transparent;
 }
 
-.main-menu-button:hover {
+.twg-main-menu-button:hover {
     -fx-background-color: transparent;
     -fx-text-fill: #FFFFFF;
+}
+
+.twg-main-view {
+    -fx-padding: 50;
+}
+
+.twg-buttons-bar {
+    -fx-alignment: center;
+    -fx-spacing: 15;
+    -fx-padding: 15;
+}
+
+.twg-categories-stack-pane {
+    -fx-alignment: top-center;
+    -fx-padding: 100;
+}
+
+.twg-categories-scroll-pane {
+    -fx-fit-to-width: true;
+    -fx-pannable: true;
+    -fx-background-color:transparent;
+}
+
+.twg-categories-flow-pane {
+    -fx-hgap: 20;
+    -fx-vgap: 20;
+    -fx-alignment: center;
+}
+
+.twg-form-pane {
+    -fx-alignment: center;
+    -fx-spacing: 15;
+    -fx-fill-width: false;
+}
+
+.twg-form-position {
+    -fx-alignment: center;
+}
+
+.twg-form-validation-message {
+    -fx-text-fill: #FF0000;
+}
+
+.twg-category-description-label {
+    -fx-alignment: center;
+    -fx-font-size: 20px;
+    -fx-wrap-text: true;
+}
+
+.twg-category-table-stack-pane {
+    -fx-padding: 50 100 100 100;
+    -fx-alignment: top-center;
+}
+
+.twg-tile {
+    -fx-padding: 12;
+    -fx-background-radius: 8;
+}
+
+.twg-tile:hover {
+    -fx-background-color: #f5f5f5;
+    -fx-cursor: hand;
+}
+
+.twg-header {
+  -fx-font-weight: bolder;
+  -fx-font-size: 28px;
+  -fx-text-alignment: center;
+}
+
+.twg-tile-label-default {
+    -fx-text-alignment: center;
+    -fx-text-fill: #666;
+}
+
+.twg-tile-label-large {
+    -fx-text-alignment: center;
+    -fx-font-size: 20;
+    -fx-text-fill: #666;
+}
+
+.twg-tile-label-very-large {
+    -fx-text-alignment: center;
+    -fx-font-size: 40;
+    -fx-text-fill: #666;
+}
+
+.twg-toggle-group-layout {
+    -fx-spacing: 10;
+    -fx-alignment: center-left;
+}
+
+.twg-category-details-layout {
+    -fx-spacing: 25;
+    -fx-alignment: center;
 }

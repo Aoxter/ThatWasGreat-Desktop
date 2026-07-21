@@ -1,105 +1,69 @@
 package com.github.aoxter.thatwasgreat.ui.controller;
 
-import com.github.aoxter.thatwasgreat.core.model.Category;
-import com.github.aoxter.thatwasgreat.core.model.Entry;
-import com.github.aoxter.thatwasgreat.core.model.RatingForm;
+import com.github.aoxter.thatwasgreat.core.dto.CategoryWithEntriesDTO;
+import com.github.aoxter.thatwasgreat.core.dto.EntryDTO;
 import com.github.aoxter.thatwasgreat.core.service.CategoryService;
-import com.github.aoxter.thatwasgreat.ui.config.ApplicationScene;
-import com.github.aoxter.thatwasgreat.ui.config.StageManager;
-import com.github.aoxter.thatwasgreat.ui.event.NewEntryRequestEvent;
-import com.github.aoxter.thatwasgreat.ui.event.OpenCategoryEvent;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import com.github.aoxter.thatwasgreat.ui.model.NewEntryModel;
+import com.github.aoxter.thatwasgreat.ui.model.View;
+import com.github.aoxter.thatwasgreat.ui.view.NewEntryViewBuilder;
+import com.github.aoxter.thatwasgreat.ui.widgets.AlertConstructor;
+import javafx.beans.binding.Bindings;
+import javafx.scene.layout.Region;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 @Component
-public class NewEntryController extends SceneController {
+public class NewEntryController extends MVCController {
     @Autowired
-    protected CategoryService categoryService;
+    private CategoryService categoryService;
+    private NewEntryModel model;
+    private CategoryWithEntriesDTO category;
+    private final Logger logger = LoggerFactory.getLogger(NewEntryController.class);
 
-    @FXML
-    public Label headerLabel;
-    @FXML
-    public TextField nameTextField;
-    @FXML
-    public TextArea descriptionTextArea;
-    @FXML
-    public ToggleGroup ratingToggleGroup;
-
-    private Category parentCategory;
-
-    @Lazy
-    public NewEntryController(StageManager stageManager, ApplicationEventPublisher applicationEventPublisher) {
-        super(stageManager, applicationEventPublisher);
-        this.parentCategory = null;
+    public Region buildView(final CategoryWithEntriesDTO category) {
+        this.category = category;
+        initModel();
+        return new NewEntryViewBuilder(model, this::saveEntry, this::goBack).build();
     }
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        if(parentCategory == null) {
-        }
-        headerLabel.setText(String.format("Create new entry for %s category", parentCategory.getName()));
+    private void initModel() {
+        model = new NewEntryModel();
+        model.setNamesAlreadyUsed(category.getEntries().stream().map(EntryDTO::getName).toList());
+        model.showNameErrorProperty().bind(Bindings.createBooleanBinding(this::isNameIncorrect, model.nameProperty()));
+        model.modelIsValidProperty().bind(Bindings.createBooleanBinding(this::isFormValid, model.nameProperty(), model.overallRateProperty()));
     }
 
-    @EventListener
-    public void handleNewEntryRequestEvent(NewEntryRequestEvent event) {
-        parentCategory = categoryService.getWithEntries(event.getParentCategoryId()).orElse(null);
-    }
-
-    public void addOnAction(ActionEvent actionEvent) {
-        if(isFormCorrect()) {
-            Entry createdEntry = new Entry(parentCategory, nameTextField.getText());
-            createdEntry.setDescription(descriptionTextArea.getText());
-            Toggle selectedRateToggle = ratingToggleGroup.getSelectedToggle();
-            RadioButton selectedRatingFormRadioButton = (RadioButton) selectedRateToggle;
-            createdEntry.setOverallRate(Byte.parseByte(selectedRatingFormRadioButton.getText()));
-            try {
-                parentCategory.addEntry(createdEntry);
-                categoryService.update(parentCategory);
-                goBackToCategoryView();
-            } catch (Exception e) {
-                parentCategory = categoryService.getWithEntries(parentCategory.getId()).orElse(null);
-                e.printStackTrace();
-                showAlert(Alert.AlertType.ERROR,"Saving Error", e.getMessage());
-            }
+    private void saveEntry() {
+        EntryDTO entry = new EntryDTO();
+        entry.setName(model.getName());
+        entry.setDescription(model.getDescription());
+        entry.setOverallRate((byte) model.getOverallRate().intValue());
+        try {
+            category.getEntries().add(entry);
+            categoryService.update(category);
+            goBack();
+        } catch (Exception e) {
+            category = categoryService.getWithEntries(category.getId());
+            logger.error("Unable to save entry to database: {}", e.getMessage());
+            AlertConstructor.showErrorAlert("Database error", "Unable to save this entry to database.");
         }
     }
 
-    private boolean isFormCorrect() {
-        if(ratingToggleGroup.getSelectedToggle() == null) {
-            showAlert(Alert.AlertType.ERROR,"Validation Error", "No rate selected");
-            return false;
+    private void goBack() {
+        switch (category.getRatingForm()) {
+            case OneToTen -> changeView(View.CATEGORY_TABLE);
         }
-        if(nameTextField.getText().isBlank()) {
-            showAlert(Alert.AlertType.ERROR, "Validation Error", "Missing name");
-            return false;
-        }
-        if(parentCategory.getEntries().stream().map(Entry::getName).toList().contains(nameTextField.getText())) {
-            showAlert(Alert.AlertType.ERROR, "Validation Error", "Entry witch such name already exists");
-            return false;
-        }
-        return true;
     }
 
-    public void cancelOnAction(ActionEvent actionEvent) {
-        goBackToCategoryView();
+    private boolean isNameIncorrect() {
+        boolean nameDuplicated = model.getNamesAlreadyUsed().contains(model.getName());
+        model.setNameErrorMessage(nameDuplicated ? "Entry with such name already exists." : "");
+        return nameDuplicated;
     }
 
-    private void goBackToCategoryView() {
-        applicationEventPublisher.publishEvent(new OpenCategoryEvent(this, parentCategory.getId()));
-        if(RatingForm.TIER.equals(parentCategory.getRatingForm())) {
-            switchScene(ApplicationScene.CATEGORY_TIERS);
-        }
-        else if(RatingForm.STARS.equals(parentCategory.getRatingForm()) || RatingForm.OneToTen.equals(parentCategory.getRatingForm())) {
-            switchScene(ApplicationScene.CATEGORY_TABLE);
-        }
+    private boolean isFormValid() {
+        return model.getName() != null && !model.getName().isEmpty() && !model.getNamesAlreadyUsed().contains(model.getName()) && model.getOverallRate() != null;
     }
 }

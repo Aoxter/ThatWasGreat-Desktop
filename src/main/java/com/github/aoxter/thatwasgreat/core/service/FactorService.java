@@ -1,7 +1,7 @@
 package com.github.aoxter.thatwasgreat.core.service;
 
 import com.github.aoxter.thatwasgreat.core.model.Entry;
-import com.github.aoxter.thatwasgreat.core.model.EntryRepository;
+import com.github.aoxter.thatwasgreat.core.repository.EntryRepository;
 import com.github.aoxter.thatwasgreat.core.service.exception.EntryNotFoundException;
 import com.github.aoxter.thatwasgreat.core.service.exception.FactorAlreadyExistsException;
 import com.github.aoxter.thatwasgreat.core.service.exception.FactorNotFoundException;

@@ -1,101 +1,102 @@
 package com.github.aoxter.thatwasgreat.ui.controller;
 
-import com.github.aoxter.thatwasgreat.core.model.Category;
-import com.github.aoxter.thatwasgreat.core.model.Entry;
+import com.github.aoxter.thatwasgreat.core.dto.CategoryWithEntriesDTO;
+import com.github.aoxter.thatwasgreat.core.dto.EntryDTO;
 import com.github.aoxter.thatwasgreat.core.service.CategoryService;
-import com.github.aoxter.thatwasgreat.ui.config.ApplicationScene;
-import com.github.aoxter.thatwasgreat.ui.config.StageManager;
-import com.github.aoxter.thatwasgreat.ui.event.NewEntryRequestEvent;
-import com.github.aoxter.thatwasgreat.ui.event.OpenCategoryEvent;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import com.github.aoxter.thatwasgreat.ui.model.CategoryModel;
+import com.github.aoxter.thatwasgreat.ui.model.EntryModel;
+import com.github.aoxter.thatwasgreat.ui.model.View;
+import com.github.aoxter.thatwasgreat.ui.view.CategoryTableViewBuilder;
+import com.github.aoxter.thatwasgreat.ui.widgets.AlertConstructor;
+import javafx.scene.control.ButtonType;
+import javafx.scene.layout.Region;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import java.net.URL;
-import java.util.HashSet;
-import java.util.ResourceBundle;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
-public class CategoryTableController extends SceneController {
-
+public class CategoryTableController extends MVCController {
     @Autowired
-    protected CategoryService categoryService;
+    private CategoryService categoryService;
+    private CategoryModel model;
+    private final Logger logger = LoggerFactory.getLogger(CategoryTableController.class);
 
-    @FXML
-    public TableView<Entry> entryTableView;
-    @FXML
-    public Label categoryNameLabel;
-    @FXML
-    public Label categoryDescriptionLabel;
 
-    private Category viewedCategory;
-
-    @Lazy
-    public CategoryTableController(StageManager stageManager, ApplicationEventPublisher applicationEventPublisher) {
-        super(stageManager, applicationEventPublisher);
+    public Region buildView(final CategoryWithEntriesDTO category) {
+        initModel(category);
+        return new CategoryTableViewBuilder(model, this::addEntry, this::removeEntry, this::removeCategory, this::goBack).build();
     }
 
-    @EventListener
-    public void handleOpenCategoryRequestEvent(OpenCategoryEvent event) {
-        viewedCategory = categoryService.getWithEntries(event.getCategoryId()).orElse(null);
+    private void initModel(final CategoryWithEntriesDTO category) {
+        model = new CategoryModel();
+        model.setId(category.getId());
+        model.setName(category.getName());
+        model.setDescription(category.getDescription());
+        model.setRatingForm(category.getRatingForm());
+        model.setEntries(category.getEntries().stream().map(this::castEntryDTOToEntryModel).collect(Collectors.toList()));
     }
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        categoryNameLabel.setText(viewedCategory.getName());
-        categoryDescriptionLabel.setText(viewedCategory.getDescription());
-        if(viewedCategory == null) {
-        }
-        TableColumn<Entry, String> nameColumn = new TableColumn<>("Name");
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        TableColumn<Entry, Byte> ratingColumn = new TableColumn<>("Rating");
-        ratingColumn.setCellValueFactory(new PropertyValueFactory<>("overallRate"));
-        refreshTableItems();
-        entryTableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        entryTableView.getColumns().addAll(nameColumn, ratingColumn);
+    private void addEntry() {
+        changeView(View.NEW_ENTRY);
     }
 
-    protected void refreshTableItems() {
-        ObservableList<Entry> entriesList = FXCollections.observableArrayList(viewedCategory.getEntries());
-        entryTableView.setItems(entriesList);
-        entryTableView.refresh();
-    }
-
-    public void addEntryOnAction(ActionEvent actionEvent) {
-        applicationEventPublisher.publishEvent(new NewEntryRequestEvent(this, viewedCategory.getId()));
-        switchScene(ApplicationScene.NEW_ENTRY);
-    }
-
-    public void removeEntriesOnAction(ActionEvent actionEvent) {
-        ObservableList<Entry> selectedEntries = entryTableView.getSelectionModel().getSelectedItems();
-        HashSet<Entry> entriesToRemoveSet = new HashSet<>(selectedEntries);
-        try {
-            viewedCategory.removeEntries(entriesToRemoveSet);
-            viewedCategory = categoryService.update(viewedCategory);
-        } catch (Exception e) {
-            viewedCategory = categoryService.getWithEntries(viewedCategory.getId()).orElse(null);
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Unable to remove these entries from database");
-            e.printStackTrace();
-        }
-        refreshTableItems();
-    }
-
-    public void removeCategoryOnAction(ActionEvent actionEvent) {
-        if(ButtonType.OK.equals(showAlert(Alert.AlertType.CONFIRMATION, "Are you sure?", "This action will remove this category and all of its entries. It cannot be undone."))) {
-            categoryService.delete(viewedCategory.getId());
-            switchScene(ApplicationScene.HOME);
+    private void removeEntry() {
+        if(ButtonType.OK.equals(AlertConstructor.showConfirmationAlert("Are you sure?", "This action will remove currently selected entry. It cannot be undone."))) {
+            List<EntryModel> entriesBackup = model.getEntries().stream().toList();
+            try {
+                model.getEntries().remove(model.getSelectedEntry());
+                categoryService.update(castModelToCategoryWithEntriesDTO());
+            } catch (Exception e) {
+                model.setEntries(entriesBackup);
+                logger.error("Unable to remove entry from database: {}", e.getMessage());
+                AlertConstructor.showErrorAlert("Database Error", "Unable to remove these entries from database");
+            }
         }
     }
 
-    public void goBackOnAction(ActionEvent actionEvent) {
-        switchScene(ApplicationScene.HOME);
+    private void removeCategory() {
+        if(ButtonType.OK.equals(AlertConstructor.showConfirmationAlert("Are you sure?", "This action will remove this category and all of its entries. It cannot be undone."))) {
+            try {
+                categoryService.delete(model.getId());
+                goBack();
+            } catch (Exception e) {
+                logger.error("Unable to remove category from database: {}", e.getMessage());
+                AlertConstructor.showErrorAlert("Database error", "Unable to remove category from database.");
+            }
+        }
+    }
+
+    private void goBack() {
+        changeView(View.CATEGORIES);
+    }
+
+    private CategoryWithEntriesDTO castModelToCategoryWithEntriesDTO() {
+        CategoryWithEntriesDTO categoryToUpdate = new CategoryWithEntriesDTO(model.getId());
+        categoryToUpdate.setName(model.getName());
+        categoryToUpdate.setDescription(model.getDescription());
+        categoryToUpdate.setRatingForm(model.getRatingForm());
+        categoryToUpdate.setEntries(model.getEntries().stream().map(this::castEntryModelToEntryDTOModel).collect(Collectors.toSet()));
+        return categoryToUpdate;
+    }
+
+    private EntryModel castEntryDTOToEntryModel(final EntryDTO entryDTO) {
+        EntryModel entryModel = new EntryModel();
+        entryModel.setId(entryDTO.getId());
+        entryModel.setName(entryDTO.getName());
+        entryModel.setDescription(entryDTO.getDescription());
+        entryModel.setOverallRate((int) entryDTO.getOverallRate());
+        return entryModel;
+    }
+
+    private EntryDTO castEntryModelToEntryDTOModel(final EntryModel entryModel) {
+        EntryDTO entryDTO = new EntryDTO(entryModel.getId());
+        entryDTO.setName(entryModel.getName());
+        entryDTO.setDescription(entryModel.getDescription());
+        entryDTO.setOverallRate((byte) entryModel.getOverallRate().intValue());
+        return entryDTO;
     }
 }
