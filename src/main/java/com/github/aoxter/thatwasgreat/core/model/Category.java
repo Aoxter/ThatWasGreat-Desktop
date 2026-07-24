@@ -2,7 +2,7 @@ package com.github.aoxter.thatwasgreat.core.model;
 
 import com.github.aoxter.thatwasgreat.core.service.exception.EntryAlreadyExistsException;
 import jakarta.persistence.*;
-import org.antlr.v4.runtime.misc.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
