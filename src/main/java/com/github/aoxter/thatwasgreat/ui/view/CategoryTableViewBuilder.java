@@ -1,10 +1,12 @@
 package com.github.aoxter.thatwasgreat.ui.view;
 
-import com.github.aoxter.thatwasgreat.ui.model.CategoryModel;
+import com.github.aoxter.thatwasgreat.ui.model.CategoryTableModel;
 import com.github.aoxter.thatwasgreat.ui.model.EntryModel;
 import com.github.aoxter.thatwasgreat.ui.widgets.LayoutConstructor;
 import com.github.aoxter.thatwasgreat.ui.widgets.TableViewBuilder;
 import com.github.aoxter.thatwasgreat.ui.widgets.WidgetConstructor;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
@@ -13,14 +15,14 @@ import javafx.scene.layout.Region;
 import javafx.util.Builder;
 
 public class CategoryTableViewBuilder implements Builder<Region> {
-    private final CategoryModel model;
+    private final CategoryTableModel model;
     private final Runnable addEntry;
     private final Runnable removeEntry;
     private final Runnable removeCategory;
     private final Runnable goBack;
     private TableView<EntryModel> tableView;
 
-    public CategoryTableViewBuilder(CategoryModel model, Runnable addEntry, Runnable removeEntry, Runnable removeCategory, Runnable goBack) {
+    public CategoryTableViewBuilder(CategoryTableModel model, Runnable addEntry, Runnable removeEntry, Runnable removeCategory, Runnable goBack) {
         this.model = model;
         this.addEntry = addEntry;
         this.removeEntry = removeEntry;
@@ -45,10 +47,35 @@ public class CategoryTableViewBuilder implements Builder<Region> {
     }
 
     protected Node createTable() {
-        Pane tableViewPane = LayoutConstructor.createCategoryTablePane();
-        tableView = new TableViewBuilder<>(model.entriesProperty(),false).addStringColumn("Name", "name").addByteColumn("Rating", "overallRate").bindSelectedItemProperty(model.selectedEntryProperty()).build();
-        tableViewPane.getChildren().add(tableView);
-        return tableViewPane;
+        Pane pane = LayoutConstructor.createCategoryTablePane();
+        tableView = new TableViewBuilder<>(model.entriesProperty(),false).addStringColumn("Name", "name").addByteColumn("Rating", "overallRate").bindSelectedItemProperty(model.selectedEntryProperty()).enableRowUnselectOnSecondClick().build();
+        tableView.prefWidthProperty().bind(pane.widthProperty().multiply(model.tableWidthProportionProperty()));
+        pane.getChildren().add(tableView);
+        pane.getChildren().add(createEntryPane(pane));
+        return pane;
+    }
+
+    protected Node createEntryPane(Pane parentPane) {
+        Pane pane = LayoutConstructor.createEntryDetailsPane();
+        pane.visibleProperty().bind(model.selectedEntryProperty().isNotNull());
+        pane.managedProperty().bind(model.selectedEntryProperty().isNotNull());
+        pane.prefWidthProperty().bind(parentPane.widthProperty().multiply(model.entryPaneWidthProportionProperty()));
+        pane.maxWidthProperty().bind(parentPane.widthProperty().multiply(model.entryPaneWidthProportionProperty()));
+        pane.getChildren().add(WidgetConstructor.createEntryNameLabel(Bindings.selectString(model.selectedEntryProperty(), "name")));
+        pane.getChildren().add(WidgetConstructor.createRatingLabel(Bindings.selectInteger(model.selectedEntryProperty(), "overallRate")));
+        pane.getChildren().add(WidgetConstructor.createDynamicLabel(
+                Bindings.createStringBinding(() -> {
+                            EntryModel entryModel = model.selectedEntryProperty().get();
+                            if (entryModel == null) {
+                                return "";
+                            }
+                            String value = entryModel.descriptionProperty().get();
+                            return value == null ? "" : value;
+                        }, model.selectedEntryProperty(),
+                        model.selectedEntryProperty().get() != null ? model.selectedEntryProperty().get().descriptionProperty() : new SimpleStringProperty("")
+                )
+        ));
+        return pane;
     }
 
     protected Node createButtonsBar() {

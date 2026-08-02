@@ -6,7 +6,7 @@ public class EntryModel {
     private final LongProperty id = new SimpleLongProperty();
     private final StringProperty name = new SimpleStringProperty();
     private final StringProperty description = new SimpleStringProperty();
-    private final ObjectProperty<Integer> overallRate = new SimpleObjectProperty<>();
+    private final IntegerProperty overallRate = new SimpleIntegerProperty();
 
     public Long getId() {
         return id.get();
@@ -48,7 +48,7 @@ public class EntryModel {
         return overallRate.get();
     }
 
-    public ObjectProperty<Integer> overallRateProperty() {
+    public IntegerProperty overallRateProperty() {
         return overallRate;
     }
 

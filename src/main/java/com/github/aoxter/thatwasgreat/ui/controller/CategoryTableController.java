@@ -3,11 +3,12 @@ package com.github.aoxter.thatwasgreat.ui.controller;
 import com.github.aoxter.thatwasgreat.core.dto.CategoryWithEntriesDTO;
 import com.github.aoxter.thatwasgreat.core.dto.EntryDTO;
 import com.github.aoxter.thatwasgreat.core.service.CategoryService;
-import com.github.aoxter.thatwasgreat.ui.model.CategoryModel;
+import com.github.aoxter.thatwasgreat.ui.model.CategoryTableModel;
 import com.github.aoxter.thatwasgreat.ui.model.EntryModel;
 import com.github.aoxter.thatwasgreat.ui.model.View;
 import com.github.aoxter.thatwasgreat.ui.view.CategoryTableViewBuilder;
 import com.github.aoxter.thatwasgreat.ui.widgets.AlertConstructor;
+import javafx.beans.binding.Bindings;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.Region;
 import org.slf4j.Logger;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 public class CategoryTableController extends MVCController {
     @Autowired
     private CategoryService categoryService;
-    private CategoryModel model;
+    private CategoryTableModel model;
     private final Logger logger = LoggerFactory.getLogger(CategoryTableController.class);
 
 
@@ -32,12 +33,19 @@ public class CategoryTableController extends MVCController {
     }
 
     private void initModel(final CategoryWithEntriesDTO category) {
-        model = new CategoryModel();
+        model = new CategoryTableModel();
         model.setId(category.getId());
         model.setName(category.getName());
         model.setDescription(category.getDescription());
         model.setRatingForm(category.getRatingForm());
         model.setEntries(category.getEntries().stream().map(this::castEntryDTOToEntryModel).collect(Collectors.toList()));
+        model.tableWidthProportionProperty().bind(
+                Bindings.createDoubleBinding(
+                        () -> model.selectedEntryProperty().get() == null ? 1.0 : 0.7,
+                        model.selectedEntryProperty()
+                )
+        );
+        model.setEntryPaneWidthProportion(0.3);
     }
 
     private void addEntry() {
