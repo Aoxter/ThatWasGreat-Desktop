@@ -7,13 +7,15 @@ import javafx.collections.ObservableList;
 
 import java.util.List;
 
-public class CategoryModel {
+public class CategoryTableModel {
     private final LongProperty id = new SimpleLongProperty();
     private final StringProperty name = new SimpleStringProperty();
     private final StringProperty description = new SimpleStringProperty();
     private final ObjectProperty<RatingForm> ratingForm = new SimpleObjectProperty<>();
     private final Property<ObservableList<EntryModel>> entries = new SimpleObjectProperty<>(FXCollections.observableArrayList());
     private final ObjectProperty<EntryModel> selectedEntry = new SimpleObjectProperty<>();
+    private final DoubleProperty tableWidthProportion = new SimpleDoubleProperty();
+    private final DoubleProperty entryPaneWidthProportion = new SimpleDoubleProperty();
 
     public Long getId() {
         return id.get();
@@ -89,5 +91,29 @@ public class CategoryModel {
 
     public void setSelectedEntry(EntryModel entry) {
         selectedEntry.set(entry);
+    }
+
+    public double getTableWidthProportion() {
+        return tableWidthProportion.get();
+    }
+
+    public DoubleProperty tableWidthProportionProperty() {
+        return tableWidthProportion;
+    }
+
+    public void setTableWidthProportion(double tableWidthProportion) {
+        this.tableWidthProportion.set(tableWidthProportion);
+    }
+
+    public double getEntryPaneWidthProportion() {
+        return entryPaneWidthProportion.get();
+    }
+
+    public DoubleProperty entryPaneWidthProportionProperty() {
+        return entryPaneWidthProportion;
+    }
+
+    public void setEntryPaneWidthProportion(double entryPaneWidthProportion) {
+        this.entryPaneWidthProportion.set(entryPaneWidthProportion);
     }
 }

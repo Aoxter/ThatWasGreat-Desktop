@@ -1,13 +1,16 @@
 package com.github.aoxter.thatwasgreat.ui.widgets;
 
+import com.github.aoxter.thatwasgreat.core.model.RatingForm;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.binding.IntegerBinding;
+import javafx.beans.property.*;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 
 import java.util.List;
 
@@ -47,12 +50,72 @@ public class WidgetConstructor {
     }
 
     /**
+     * Creates label for entry name
+     * @param stringProperty observable object containing text value that will be displayed on the label
+     * @return created Label
+     */
+    public static Label createEntryNameLabel(ObservableValue<String> stringProperty) {
+        return createDynamicStyledLabel(stringProperty, "twg-header-2");
+    }
+
+    /**
      * Creates label for error information displayed on error view
      * @param stringProperty observable object containing text value that will be displayed on the label
      * @return created Label
      */
     public static Label createErrorViewLabel(StringProperty stringProperty) {
         return createDynamicStyledLabel(stringProperty, "twg-header");
+    }
+
+    /**
+     * Creates dynamic label for entry rating value that will be changing font color depending on rating value. It handles only {@link RatingForm#OneToTen}
+     * @param ratingBinding IntegerBinding containing rating value to display in label
+     * @return created Label
+     */
+    public static Label createRatingLabel(IntegerBinding ratingBinding) {
+        Label label = createDynamicStyledLabel(ratingBinding.asString().concat("/10"), "twg-digits-rating-label");
+        label.textFillProperty().bind(Bindings.createObjectBinding(() -> getColorForRating(ratingBinding.get()), ratingBinding));
+        return label;
+    }
+
+    /**
+     * Returns appropriate color for given rating. It is dedicated for {@link RatingForm#OneToTen}
+     * @param rating value representing rating, values lesser than 1 will be considered as 1 and values bigger than 10 will be considered as 10
+     * @return Color for given rating,
+     */
+    private static Color getColorForRating(int rating) {
+        rating = Math.max(1, Math.min(10, rating));
+        return switch (rating) {
+            case 1 -> Color.rgb(180, 0, 0);
+            case 2 -> Color.rgb(220, 50, 50);
+            case 3 -> Color.rgb(240, 100, 40);
+            case 4 -> Color.rgb(255, 160, 0);
+            case 5 -> Color.rgb(255, 210, 0);
+            case 6 -> Color.rgb(230, 230, 0);
+            case 7 -> Color.rgb(150, 210, 0);
+            case 8 -> Color.rgb(70, 180, 70);
+            case 9 -> Color.rgb(20, 140, 50);
+            case 10 -> Color.rgb(0, 100, 30);
+            default -> Color.BLACK;
+        };
+    }
+
+    /**
+     * Creates regular static label
+     * @param text text that will be displayed on the label
+     * @return created Label
+     */
+    public static Label createStaticLabel(String text) {
+        return createStaticStyledLabel(text);
+    }
+
+    /**
+     * Creates regular dynamic label
+     * @param stringProperty observable object containing text value that will be displayed on the label
+     * @return created Label
+     */
+    public static Label createDynamicLabel(ObservableValue<String> stringProperty) {
+        return createDynamicStyledLabel(stringProperty);
     }
 
     /**
@@ -68,14 +131,18 @@ public class WidgetConstructor {
     }
 
     /**
-     * Creates Label with dynamic text
-     * @param stringProperty property with text to display, it will be bound to Label's text property
+     * Creates Label with dynamic text, when value or observable are null then empty string is displayed
+     * @param observableValue ObservableValue of String with text to display, it will be bound to Label's text property
      * @param styleClasses style classes
      * @return created Label
      */
-    public static Label createDynamicStyledLabel(StringProperty stringProperty, String... styleClasses) {
+    public static Label createDynamicStyledLabel(ObservableValue<String> observableValue, String... styleClasses) {
         Label label = createStyledLabel(styleClasses);
-        label.textProperty().bind(stringProperty);
+        label.textProperty().bind(Bindings.createStringBinding(
+                () -> observableValue == null || observableValue.getValue() == null ? "" : observableValue.getValue(),
+                observableValue
+            )
+        );
         return label;
     }
 

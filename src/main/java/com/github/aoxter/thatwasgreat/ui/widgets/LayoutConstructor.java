@@ -42,7 +42,17 @@ public class LayoutConstructor {
      * @return created Pane
      */
     public static Pane createCategoryTablePane() {
-        return createStyledStackPane("twg-category-table-stack-pane");
+        return createStyledHBox("twg-category-table-layout");
+    }
+
+    /**
+     * Creates layout for entry detail information
+     * @return created Pane
+     */
+    public static Pane createEntryDetailsPane() {
+        VBox pane = createStyledVBox("twg-entry-details-layout");
+        HBox.setHgrow(pane, Priority.ALWAYS);
+        return pane;
     }
 
     /**

@@ -3,10 +3,14 @@ package com.github.aoxter.thatwasgreat.ui.widgets;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
+import javafx.util.Callback;
 
 /**
  * Builder class that creates new {@link TableView} object
@@ -71,6 +75,31 @@ public class TableViewBuilder<T> {
      */
     public TableViewBuilder<T> bindSelectedItemProperty(ObjectProperty<T> propertyToBind) {
         propertyToBind.bind(tableView.getSelectionModel().selectedItemProperty());
+        return this;
+    }
+
+    /**
+     * Enables row unselecting on second click. For {@link SelectionMode#SINGLE} currently selected row will be unselected but for {@link SelectionMode#MULTIPLE} every selected row will be unselected after one of them is clicked.
+     * @return this builder instance
+     */
+    public TableViewBuilder<T> enableRowUnselectOnSecondClick() {
+        tableView.setRowFactory(new Callback<TableView<T>, TableRow<T>>() {
+            @Override
+            public TableRow<T> call(TableView<T> tableView2) {
+                final TableRow<T> row = new TableRow<>();
+                row.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        final int index = row.getIndex();
+                        if (index >= 0 && index < tableView.getItems().size() && tableView.getSelectionModel().isSelected(index)  ) {
+                            tableView.getSelectionModel().clearSelection();
+                            event.consume();
+                        }
+                    }
+                });
+                return row;
+            }
+        });
         return this;
     }
 }
